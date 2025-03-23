@@ -36,7 +36,7 @@ func TestExampleUsage(t *testing.T) {
 
 	// Create te slogzlog handler with the previously created logger. The context
 	// containing the logger will be stored in the handler
-	handler := NewSlogHandler(ctx)
+	handler := Handler(ctx)
 
 	// Use the handler as desired
 
