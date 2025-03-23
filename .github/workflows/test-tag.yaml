@@ -67,7 +67,6 @@ jobs:
         with:
           report-path: "report.json"
           title: Test Results
-          summary: true
           pull-request: true
           status-check: true
           status-check-name: Test Results
@@ -75,16 +74,15 @@ jobs:
           comment-tag: ${{ github.workflow }}-${{ github.job }}
           overwrite-comment: true
 
-      # - name: Publish Test Report to Summary
-      #   uses: ctrf-io/github-test-reporter@v1.0.10
-      #   if: ${{ !cancelled() }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     report-path: "report.json"
-      #     title: Test Results
-      #     summary: true
-      #     pull-request-report: true
+      - name: Publish Test Report to Summary
+        uses: ctrf-io/github-test-reporter@v1.0.10
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          report-path: "report.json"
+          title: Test Results
+          summary: true
 
       - name: Update coverage report
         uses: ncruces/go-coverage-report@main
