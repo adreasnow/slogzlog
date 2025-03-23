@@ -2,6 +2,7 @@ package slogzlog
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -32,11 +33,11 @@ func TestExampleUsage(t *testing.T) {
 				zerolog.ConsoleWriter{Out: buf, NoColor: true},
 			),
 		).
-		WithContext(t.Context())
+		WithContext(context.Background())
 
 	// Create te slogzlog handler with the previously created logger. The context
 	// containing the logger will be stored in the handler
-	handler := Handler(ctx)
+	handler := New(ctx)
 
 	// Use the handler as desired
 

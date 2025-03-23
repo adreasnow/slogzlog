@@ -30,6 +30,8 @@
     "subsubgroup",
     "testname",
     "zerolog",
-    "stretchr"
+    "stretchr",
+    "ctrf",
+    "jsonfile"
   ]
 }
