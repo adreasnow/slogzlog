@@ -39,7 +39,7 @@ func TestHandler(t *testing.T) {
 		t.Parallel()
 
 		ctx, buf := setupLogger(t)
-		h := NewSlogHandler(ctx)
+		h := Handler(ctx)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
@@ -55,7 +55,7 @@ func TestHandler(t *testing.T) {
 		t.Parallel()
 
 		ctx, buf := setupLogger(t)
-		h := NewSlogHandler(ctx)
+		h := Handler(ctx)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
@@ -71,7 +71,7 @@ func TestHandler(t *testing.T) {
 }
 
 func TestEnabled(t *testing.T) {
-	h := slogzloghandler{}
+	h := handler{}
 
 	t.Run("trace", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.TraceLevel)

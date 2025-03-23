@@ -10,19 +10,19 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type slogzloghandler struct {
+type handler struct {
 	slog.Handler
 	ctx context.Context
 }
 
 // Creates a new slog handler, storing the stored context in the handler struct.
 // This context should contain a zerolog.Logger that will be used by the handler
-func NewSlogHandler(ctx context.Context) slogzloghandler {
-	return slogzloghandler{ctx: ctx}
+func Handler(ctx context.Context) handler {
+	return handler{ctx: ctx}
 }
 
 // Checks to see if the zerolog global log level is allowed based on the incoming slog.Level
-func (s slogzloghandler) Enabled(_ context.Context, level slog.Level) bool {
+func (s handler) Enabled(_ context.Context, level slog.Level) bool {
 	var allowable []slog.Level
 	switch zerolog.GlobalLevel() {
 	case zerolog.TraceLevel:
@@ -44,7 +44,7 @@ func (s slogzloghandler) Enabled(_ context.Context, level slog.Level) bool {
 
 // Converts the slog.Record into a zerolog.Event and sends it using the logger
 // that's stored in the context that was set when the handler was initilised
-func (s slogzloghandler) Handle(ctx context.Context, r slog.Record) error {
+func (s handler) Handle(ctx context.Context, r slog.Record) error {
 	event := log.Ctx(s.ctx).
 		WithLevel(slogToZlogLevel(r.Level)).
 		Ctx(ctx)
