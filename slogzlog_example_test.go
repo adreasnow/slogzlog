@@ -12,6 +12,7 @@ import (
 	"github.com/alecthomas/assert/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/require"
 )
 
 func TestExampleUsage(t *testing.T) {
@@ -50,7 +51,8 @@ func TestExampleUsage(t *testing.T) {
 			slog.Any("error", fmt.Errorf("something bad happened...")),
 			slog.Duration("time_to_error", time.Since(startTime)),
 		)
-		handler.Handle(ctx, r)
+		err := handler.Handle(ctx, r)
+		require.NoError(t, err)
 	}
 
 	// Check the message that got logged to zerolog

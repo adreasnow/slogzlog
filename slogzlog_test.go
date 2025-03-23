@@ -13,6 +13,7 @@ import (
 	"github.com/alecthomas/assert/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/require"
 )
 
 func setupLogger(t *testing.T) (context.Context, *bytes.Buffer) {
@@ -45,7 +46,8 @@ func TestHandler(t *testing.T) {
 			Level:   slog.LevelInfo,
 		}
 
-		h.Handle(ctx, r)
+		err := h.Handle(ctx, r)
+		require.NoError(t, err)
 		assert.Contains(t, buf.String(), "INF test message")
 	})
 
@@ -61,7 +63,8 @@ func TestHandler(t *testing.T) {
 		}
 		r.AddAttrs(slog.String("test", "test"))
 
-		h.Handle(ctx, r)
+		err := h.Handle(ctx, r)
+		require.NoError(t, err)
 		assert.Contains(t, buf.String(), "INF test message test=test")
 	})
 

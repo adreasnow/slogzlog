@@ -21,7 +21,7 @@ func NewSlogHandler(ctx context.Context) slogzloghandler {
 	return slogzloghandler{ctx: ctx}
 }
 
-// Checks to see if the zerolog global log level is alllowed based on the incoming slog.Level
+// Checks to see if the zerolog global log level is allowed based on the incoming slog.Level
 func (s slogzloghandler) Enabled(_ context.Context, level slog.Level) bool {
 	var allowable []slog.Level
 	switch zerolog.GlobalLevel() {
