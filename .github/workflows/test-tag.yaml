@@ -1,0 +1,124 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+name: Test and tag
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    name: Run Golang-CI Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+
+      - name: Run Golang-CI Lint
+        uses: golangci/golangci-lint-action@v6
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+
+      - name: Test
+        run: >
+          go tool gotestsum
+          --junitfile report.xml
+          --packages="./..."
+          --format testname
+          --rerun-fails=3
+          --
+          -coverpkg=./...
+          -coverprofile=coverage.out
+
+      - name: Attach tests to GHA
+        uses: dorny/test-reporter@v2.0.0
+        if: ${{ !cancelled() }}
+        id: tests
+        with:
+          name: Test Results
+          reporter: java-junit
+          path: report.xml
+          max-annotations: 30
+
+      - name: Update coverage report
+        uses: ncruces/go-coverage-report@main
+        with:
+          coverage-file: coverage.out
+          report: "true"
+          chart: "true"
+          amend: "true"
+
+  megalinter:
+    name: Run Megalinter
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: MegaLinter
+        id: ml
+        uses: oxsecurity/megalinter/flavors/documentation@v8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_STATUS_REPORTER: true
+
+  tag:
+    if: ${{ github.event_name != 'pull_request'  }}
+    name: Increment Tag
+    needs:
+      - lint
+      - test
+      - megalinter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get next version
+        uses: reecetech/version-increment@2024.10.1
+        id: version
+        with:
+          scheme: semver
+          increment: patch
+          tag_prefix: v
+
+      - name: Create tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.version.outputs.v-version }}',
+              sha: context.sha
+            })
