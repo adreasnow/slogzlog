@@ -28,9 +28,14 @@ jobs:
           cache-dependency-path: |
             go.sum
 
+      - name: Install dependencies
+        run: |
+          go get github.com/ctrf-io/go-ctrf-json-reporter/cmd/go-ctrf-json-reporter
+          go get gotest.tools/gotestsum
+
       - name: Test
         run: >
-          go tool gotestsum
+          gotestsum
           --jsonfile gotestsum.json
           --packages="./..."
           --format testname

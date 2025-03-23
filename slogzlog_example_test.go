@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alecthomas/assert/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,7 +49,7 @@ func TestExampleUsage(t *testing.T) {
 			Level:   slog.LevelError,
 		}
 		r.AddAttrs(
-			slog.Any("error", fmt.Errorf("something bad happened...")),
+			slog.Any("error", fmt.Errorf("something bad happened")),
 			slog.Duration("time_to_error", time.Since(startTime)),
 		)
 		err := handler.Handle(ctx, r)

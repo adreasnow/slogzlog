@@ -1,4 +1,4 @@
-// slogzlog is a slog.Handler that passes slog log requests to a zerolog.Logger
+// Package slogzlog is a slog.Handler that passes slog log requests to a zerolog.Logger
 // object that's stored in a context
 package slogzlog
 
@@ -12,18 +12,19 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Handler is the bridge betweeen slog and zerolog
 type Handler struct {
 	slog.Handler
 	ctx context.Context
 }
 
-// Handler creates a new slog handler, storing the stored context in the handler struct.
+// New creates a new slog handler, storing the stored context in the handler struct.
 // This context should contain a zerolog.Logger that will be used by the handler
 func New(ctx context.Context) Handler {
 	return Handler{ctx: ctx}
 }
 
-// Checks to see if the zerolog global log level is allowed based on the incoming slog.Level
+// Enabled checks to see if the zerolog global log level is allowed based on the incoming slog.Level
 func (s Handler) Enabled(_ context.Context, level slog.Level) bool {
 	var allowable []slog.Level
 	switch zerolog.GlobalLevel() {
@@ -44,7 +45,7 @@ func (s Handler) Enabled(_ context.Context, level slog.Level) bool {
 	return slices.Contains(allowable, level)
 }
 
-// Converts the slog.Record into a zerolog.Event and sends it using the logger
+// Handle handles the the slog.Record into a zerolog.Event and sends it using the logger
 // that's stored in the context that was set when the handler was initilised
 func (s Handler) Handle(ctx context.Context, r slog.Record) error {
 	event := log.Ctx(s.ctx).
