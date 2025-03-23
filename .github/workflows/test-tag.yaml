@@ -30,8 +30,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          go get github.com/ctrf-io/go-ctrf-json-reporter/cmd/go-ctrf-json-reporter
-          go get gotest.tools/gotestsum
+          go get -u github.com/ctrf-io/go-ctrf-json-reporter/cmd/go-ctrf-json-reporter
+          go get -u gotest.tools/gotestsum
 
       - name: Test
         run: >
