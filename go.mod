@@ -1,8 +1,6 @@
 module github.com/adreasnow/slogzlog
 
-go 1.23.0
-
-toolchain go1.23.1
+go 1.24.1
 
 require (
 	github.com/alecthomas/assert/v2 v2.11.0
