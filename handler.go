@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Handler is the bridge betweeen slog and zerolog
+// Handler is the bridge between slog and zerolog
 type Handler struct {
 	slog.Handler
 	ctx context.Context

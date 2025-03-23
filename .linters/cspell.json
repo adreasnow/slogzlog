@@ -32,6 +32,7 @@
     "zerolog",
     "stretchr",
     "ctrf",
-    "jsonfile"
+    "jsonfile",
+    "gotest"
   ]
 }
