@@ -46,7 +46,7 @@ jobs:
       - name: Test
         run: >
           go tool gotestsum
-          --junitfile report.xml
+          --jsonfile gotestsum.json
           --packages="./..."
           --format testname
           --rerun-fails=3
@@ -54,15 +54,35 @@ jobs:
           -coverpkg=./...
           -coverprofile=coverage.out
 
-      - name: Attach tests to GHA
-        uses: dorny/test-reporter@v2.0.0
+      - name: Convert report into ctrf
         if: ${{ !cancelled() }}
-        id: tests
+        working-directory: src
+        run: go tool go-ctrf-json-reporter -output report.json < gotestsum.json
+
+      - name: Publish Test Report to PR
+        uses: ctrf-io/github-test-reporter@v1.0.10
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Test Results
-          reporter: java-junit
-          path: report.xml
-          max-annotations: 30
+          report-path: "report.json"
+          title: Test Results
+          pull-request: true
+          status-check: true
+          status-check-name: Test Results
+          pull-request-report: true
+          comment-tag: ${{ github.workflow }}-${{ github.job }}
+          overwrite-comment: true
+
+      - name: Publish Test Report to Summary
+        uses: ctrf-io/github-test-reporter@v1.0.10
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          report-path: "report.json"
+          title: Test Results
+          summary: true
 
       - name: Update coverage report
         uses: ncruces/go-coverage-report@main
