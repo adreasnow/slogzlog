@@ -29,7 +29,7 @@ func setupLogger(t *testing.T) (context.Context, *bytes.Buffer) {
 				zerolog.ConsoleWriter{Out: buf, NoColor: true},
 			),
 		).
-		WithContext(t.Context()), buf
+		WithContext(context.Background()), buf
 }
 
 func TestHandler(t *testing.T) {
@@ -39,7 +39,7 @@ func TestHandler(t *testing.T) {
 		t.Parallel()
 
 		ctx, buf := setupLogger(t)
-		h := Handler(ctx)
+		h := New(ctx)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
@@ -55,7 +55,7 @@ func TestHandler(t *testing.T) {
 		t.Parallel()
 
 		ctx, buf := setupLogger(t)
-		h := Handler(ctx)
+		h := New(ctx)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
@@ -71,54 +71,54 @@ func TestHandler(t *testing.T) {
 }
 
 func TestEnabled(t *testing.T) {
-	h := handler{}
+	h := Handler{}
 
 	t.Run("trace", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.TraceLevel)
-		assert.True(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 
 	t.Run("debug", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-		assert.True(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 
 	t.Run("info", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-		assert.False(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 
 	t.Run("warn", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.WarnLevel)
-		assert.False(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 
 	t.Run("error", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
-		assert.False(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.True(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.True(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 
 	t.Run("fatal", func(t *testing.T) {
 		zerolog.SetGlobalLevel(zerolog.FatalLevel)
-		assert.False(t, h.Enabled(t.Context(), slog.LevelDebug))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelInfo))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelWarn))
-		assert.False(t, h.Enabled(t.Context(), slog.LevelError))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelDebug))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelInfo))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelWarn))
+		assert.False(t, h.Enabled(context.Background(), slog.LevelError))
 	})
 }
 

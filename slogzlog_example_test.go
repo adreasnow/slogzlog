@@ -2,6 +2,7 @@ package slogzlog
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -9,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alecthomas/assert/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,11 +33,11 @@ func TestExampleUsage(t *testing.T) {
 				zerolog.ConsoleWriter{Out: buf, NoColor: true},
 			),
 		).
-		WithContext(t.Context())
+		WithContext(context.Background())
 
 	// Create te slogzlog handler with the previously created logger. The context
 	// containing the logger will be stored in the handler
-	handler := Handler(ctx)
+	handler := New(ctx)
 
 	// Use the handler as desired
 
@@ -48,7 +49,7 @@ func TestExampleUsage(t *testing.T) {
 			Level:   slog.LevelError,
 		}
 		r.AddAttrs(
-			slog.Any("error", fmt.Errorf("something bad happened...")),
+			slog.Any("error", fmt.Errorf("something bad happened")),
 			slog.Duration("time_to_error", time.Since(startTime)),
 		)
 		err := handler.Handle(ctx, r)
@@ -57,5 +58,5 @@ func TestExampleUsage(t *testing.T) {
 
 	// Check the message that got logged to zerolog
 
-	assert.Contains(t, buf.String(), `ERR an error occurred error="something bad happened..." time_to_error=0.`)
+	assert.Contains(t, buf.String(), `ERR an error occurred error="something bad happened" time_to_error=0.`)
 }

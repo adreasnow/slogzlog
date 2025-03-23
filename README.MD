@@ -27,5 +27,5 @@ The slogzlog package provides a handler for slog that sends incoming logs to zer
 
 	// Create te slogzlog handler with the previously created logger. The context
 	// containing the logger will be stored in the handler
-	handler := Handler(ctx)
+	handler := New(ctx)
 ```
