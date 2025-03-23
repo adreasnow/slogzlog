@@ -81,7 +81,8 @@ jobs:
           title: Test Results
           report-path: "report.json"
           summary: true
-          pull-request-report: true
+          summary-report: true
+          failed-report: true
 
       - name: Update coverage report
         uses: ncruces/go-coverage-report@main
