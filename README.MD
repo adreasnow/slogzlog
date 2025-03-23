@@ -2,7 +2,7 @@
 
 [![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/adreasnow/slogzlog) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/adreasnow/slogzlog/main/LICENSE) [![Build Status](https://github.com/adreasnow/slogzlog/actions/workflows/test-tag.yaml/badge.svg?branch=main)](https://github.com/adreasnow/slogzlog/actions/workflows/test-tag.yaml) [![Go Coverage](https://github.com/adreasnow/slogzlog/wiki/coverage.svg)](https://raw.githack.com/wiki/adreasnow/slogzlog/coverage.html)
 
-The slogzlog package provides a handler for slog that sends incoming logs to zerolog
+The slogzlog package provides a handler for slog that sends incoming logs to zerolog. The module was created as I love the [github.com/go-fuego/fuego](https://github.com/go-fuego/fuego) router, however it only supports passing in a `slog.Handler` to the logging field, and I much prefer using [github.com/rs/zerolog](https://github.com/rs/zerolog).
 
 ## Usage
 
