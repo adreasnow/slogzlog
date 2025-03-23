@@ -58,5 +58,5 @@ func TestExampleUsage(t *testing.T) {
 
 	// Check the message that got logged to zerolog
 
-	assert.Contains(t, buf.String(), `ERR an error occurred error="something bad happened..." time_to_error=0.`)
+	assert.Contains(t, buf.String(), `ERR an error occurred error="something bad happened" time_to_error=0.`)
 }
