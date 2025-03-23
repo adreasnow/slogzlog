@@ -56,7 +56,6 @@ jobs:
 
       - name: Convert report into ctrf
         if: ${{ !cancelled() }}
-        working-directory: src
         run: go tool go-ctrf-json-reporter -output report.json < gotestsum.json
 
       - name: Publish Test Report to PR
@@ -107,7 +106,7 @@ jobs:
 
       - name: MegaLinter
         id: ml
-        uses: oxsecurity/megalinter/flavors/documentation@v8
+        uses: oxsecurity/megalinter/flavors/go@v8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_STATUS_REPORTER: true
