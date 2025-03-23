@@ -46,7 +46,7 @@ jobs:
 
       - name: Convert report into ctrf
         if: ${{ !cancelled() }}
-        run: go tool go-ctrf-json-reporter -output report.json < gotestsum.json
+        run: go-ctrf-json-reporter -output report.json < gotestsum.json
 
       - name: Publish Test Report to PR
         uses: ctrf-io/github-test-reporter@v1.0.10
