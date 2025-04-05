@@ -46,7 +46,7 @@ func (s Handler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 // Handle handles the the slog.Record into a zerolog.Event and sends it using the logger
-// that's stored in the context that was set when the handler was initilised
+// that's stored in the context that was set when the handler was initialised
 func (s Handler) Handle(ctx context.Context, r slog.Record) error {
 	event := log.Ctx(s.ctx).
 		WithLevel(slogToZlogLevel(r.Level)).
