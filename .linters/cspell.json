@@ -35,6 +35,8 @@
     "jsonfile",
     "gotest",
     "godoc",
-    "fuego"
+    "fuego",
+    "LINTERS",
+    "linters"
   ]
 }
