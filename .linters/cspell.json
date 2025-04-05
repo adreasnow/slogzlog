@@ -6,21 +6,21 @@
     "**/.pnpm-lock.json",
     ".vscode",
     "package-lock.json",
-    "megalinter-reports"
+    "megalinter-reports",
+    "**.mod",
+    "**.sum"
   ],
-  "language": "en",
+  "language": "en-GB",
   "version": "0.2",
   "words": [
     "Poitrey",
     "alecthomas",
-    "behaviour",
     "coverpkg",
     "coverprofile",
     "dorny",
     "golangci",
     "gomod",
     "gotestsum",
-    "initilised",
     "junitfile",
     "ncruces",
     "reecetech",
@@ -33,6 +33,8 @@
     "stretchr",
     "ctrf",
     "jsonfile",
-    "gotest"
+    "gotest",
+    "godoc",
+    "fuego"
   ]
 }
