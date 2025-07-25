@@ -2,7 +2,6 @@ package slogzlog
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -19,24 +18,21 @@ func ExampleNew() {
 	// panic levels, these will effectively disable the slogzlog bridge
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
-	// Create a new zerolog.Logger and store it in a context. This logger also
-	// outputs to a buffer for testing.
+	// Create a new zerolog.Logger
 	buf := new(bytes.Buffer)
-	ctx := log.
+	zedLogger := log.
 		Output(
 			io.MultiWriter(
 				zerolog.ConsoleWriter{Out: buf, NoColor: true},
 			),
-		).
-		WithContext(context.Background())
+		)
 
-	// Create the slogzlog handler with the previously created logger. The context
-	// containing the logger will be stored in the handler
-	handler := New(ctx)
+	// Create the slogzlog handler with the previously created logger
+	handler := New(&zedLogger)
 
 	// Use the handler as desired
 	logger := slog.New(handler)
-	logger.ErrorContext(ctx, "an error occurred",
+	logger.Error("an error occurred",
 		slog.Any("error", fmt.Errorf("something bad happened")),
 		slog.Duration("time_to_error", time.Millisecond*125),
 	)

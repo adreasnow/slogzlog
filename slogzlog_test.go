@@ -12,24 +12,22 @@ import (
 
 	"github.com/alecthomas/assert/v2"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
 )
 
-func setupLogger(t *testing.T) (context.Context, *bytes.Buffer) {
+func setupLogger(t *testing.T) (*zerolog.Logger, *bytes.Buffer) {
 	t.Helper()
 
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	buf := new(bytes.Buffer)
-	return log.
-		Output(
-			io.MultiWriter(
-				zerolog.TestWriter{T: t},
-				zerolog.ConsoleWriter{Out: os.Stdout},
-				zerolog.ConsoleWriter{Out: buf, NoColor: true},
-			),
-		).
-		WithContext(context.Background()), buf
+	logger := zerolog.New(
+		io.MultiWriter(
+			zerolog.TestWriter{T: t},
+			zerolog.ConsoleWriter{Out: os.Stdout},
+			zerolog.ConsoleWriter{Out: buf, NoColor: true},
+		),
+	)
+	return &logger, buf
 }
 
 func TestHandler(t *testing.T) {
@@ -38,15 +36,15 @@ func TestHandler(t *testing.T) {
 	t.Run("basic", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, buf := setupLogger(t)
-		h := New(ctx)
+		logger, buf := setupLogger(t)
+		h := New(logger)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
 			Level:   slog.LevelInfo,
 		}
 
-		err := h.Handle(ctx, r)
+		err := h.Handle(t.Context(), r)
 		require.NoError(t, err)
 		assert.Contains(t, buf.String(), "INF test message")
 	})
@@ -54,8 +52,8 @@ func TestHandler(t *testing.T) {
 	t.Run("attrs", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, buf := setupLogger(t)
-		h := New(ctx)
+		logger, buf := setupLogger(t)
+		h := New(logger)
 		r := slog.Record{
 			Time:    time.Now(),
 			Message: "test message",
@@ -63,7 +61,7 @@ func TestHandler(t *testing.T) {
 		}
 		r.AddAttrs(slog.String("test", "test"))
 
-		err := h.Handle(ctx, r)
+		err := h.Handle(t.Context(), r)
 		require.NoError(t, err)
 		assert.Contains(t, buf.String(), "INF test message test=test")
 	})
@@ -134,9 +132,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("string", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.String("test", "test"))
 		event.Send()
 
@@ -145,9 +143,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("bool", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Bool("test", true))
 		event.Send()
 
@@ -156,9 +154,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("duration", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Duration("test", time.Minute))
 		event.Send()
 
@@ -167,9 +165,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("float64", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Float64("test", 20.3))
 		event.Send()
 
@@ -178,10 +176,10 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("time", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
 		testTime := time.Now()
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Time("test", testTime))
 		event.Send()
 
@@ -190,9 +188,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("uint64", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Uint64("test", uint64(21)))
 		event.Send()
 
@@ -201,9 +199,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("group", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(
 			event,
 			slog.Group("test group",
@@ -221,9 +219,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Any("test", fmt.Errorf("bad things")))
 		event.Send()
 
@@ -232,9 +230,9 @@ func TestSlogToZlogAttr(t *testing.T) {
 
 	t.Run("any", func(t *testing.T) {
 		t.Parallel()
-		ctx, buf := setupLogger(t)
+		logger, buf := setupLogger(t)
 
-		event := log.Ctx(ctx).Info().Ctx(ctx)
+		event := logger.Info().Ctx(t.Context())
 		slogToZlogAttr(event, slog.Any("test", "test message"))
 		event.Send()
 
