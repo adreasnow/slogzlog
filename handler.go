@@ -9,19 +9,18 @@ import (
 	"slices"
 
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 // Handler is the bridge between slog and zerolog
 type Handler struct {
 	slog.Handler
-	ctx context.Context
+	logger *zerolog.Logger
 }
 
 // New creates a new slog handler, storing the stored context in the handler struct.
 // This context should contain a zerolog.Logger that will be used by the handler
-func New(ctx context.Context) Handler {
-	return Handler{ctx: ctx}
+func New(logger *zerolog.Logger) Handler {
+	return Handler{logger: logger}
 }
 
 // Enabled checks to see if the zerolog global log level is allowed based on the incoming slog.Level
@@ -48,7 +47,7 @@ func (s Handler) Enabled(_ context.Context, level slog.Level) bool {
 // Handle handles the the slog.Record into a zerolog.Event and sends it using the logger
 // that's stored in the context that was set when the handler was initialised
 func (s Handler) Handle(ctx context.Context, r slog.Record) error {
-	event := log.Ctx(s.ctx).
+	event := s.logger.
 		WithLevel(slogToZlogLevel(r.Level)).
 		Ctx(ctx)
 
